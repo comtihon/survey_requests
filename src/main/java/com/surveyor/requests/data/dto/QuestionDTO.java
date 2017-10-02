@@ -24,10 +24,6 @@ public class QuestionDTO {
         return answerId;
     }
 
-    public boolean isAnswered() {
-        return this.answerId != null;
-    }
-
     @Override
     public String toString() {
         return "QuestionDTO{" +

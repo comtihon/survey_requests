@@ -63,8 +63,7 @@ public class ResponseService {
         while (iter.hasNext()) { //remove answered questions to avoid multiple response for one
             Question toBeAnswered = iter.next();
             QuestionDTO questionDTO = new QuestionDTO(toBeAnswered.getId());
-            answer(questionDTO, toBeAnswered.getAnswers(), answers);
-            if (!questionDTO.isAnswered())
+            if(!answer(questionDTO, toBeAnswered.getAnswers(), answers))
                 unanswered.add(toBeAnswered.getId());
             else {
                 LOGGER.debug("send {} to {}", questionDTO, config.getKafkaTopic());
@@ -75,14 +74,15 @@ public class ResponseService {
         return unanswered;
     }
 
-    private void answer(QuestionDTO questionDTO,
+    private boolean answer(QuestionDTO questionDTO,
                         List<Answer> possibleAnswers,
                         Map<String, AnswerDTO> answers) {
         for (Answer a : possibleAnswers) {
             if (answers.containsKey(a.getId())) {
                 questionDTO.answer(a.getId());
-                break; //Question answered. No more attempts for it.
+                return true; //Question answered. No more attempts for it.
             }
         }
+        return false;
     }
 }
